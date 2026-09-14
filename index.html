@@ -174,19 +174,28 @@
     <h1 class="title">
       <svg viewBox="0 0 1200 1498" preserveAspectRatio="xMidYMid meet"
            role="img" aria-label="Adventures of Crabby">
+        <defs>
+          <!-- The gentle arc "Adventures" rides on. Bigger A-radius = flatter. -->
+          <path id="advArc" d="M 170 340 A 1400 1400 0 0 1 1030 340" fill="none"/>
+        </defs>
+
 
         <!-- Drawn twice per line: once as a thick pale outline (the
              halo), then the navy lettering on top. Keep the wording
              identical between the two groups. -->
         <text class="title-halo line-the"         x="600" y="190" text-anchor="middle">The</text>
-        <text class="title-halo line-adventures" x="600" y="290" text-anchor="middle">Adventures</text>
+        <text class="title-halo line-adventures">
+          <textPath href="#advArc" startOffset="50%" text-anchor="middle">Adventures</textPath>
+        </text>
         <text class="title-halo line-of"         x="600" y="370" text-anchor="middle">of</text>
         <text class="title-halo line-crabby"     x="600" y="540" text-anchor="middle">Crabby</text>
 
         <!-- EDIT: the title wording. Change it in the halo group above
              too, or the halo won't match the letters. -->
         <text class="title-text line-the"         x="600" y="190" text-anchor="middle">The</text>
-        <text class="title-text line-adventures" x="600" y="290" text-anchor="middle">Adventures</text>
+        <text class="title-text line-adventures">
+          <textPath href="#advArc" startOffset="50%" text-anchor="middle">Adventures</textPath>
+        </text>
         <text class="title-text line-of"         x="600" y="370" text-anchor="middle">of</text>
         <text class="title-text line-crabby"     x="600" y="540" text-anchor="middle">Crabby</text>
       </svg>
