@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  jivablue.com.au  —  About Crabby (placeholder page)
+  ============================================================
+
+  This is the page the "About Crabby" link on the home page
+  (index.html) leads to. Right now it just says "Coming" — Kevin
+  will fill in the real content later.
+
+  HOW TO EDIT IT
+  --------------
+  Open this file in a plain text editor (VS Code, Notepad — not
+  Microsoft Word). The word "Coming" in the BODY section is the
+  bit to replace once there's real content.
+  ============================================================
+-->
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- EDIT: the text shown on the browser tab -->
+<title>About Crabby</title>
+
+<meta name="description" content="About Crabby — a children's picture book.">
+
+<style>
+  :root {
+    --paper: #fbf4dd;   /* same page background as the home page */
+    --ink:   #163a5c;   /* same ink colour as the home page */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  /* EDIT: the placeholder wording */
+  .coming {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .back {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    text-decoration: none;
+    opacity: .75;
+  }
+
+  .back:hover { opacity: 1; }
+</style>
+</head>
+
+<body>
+
+  <a class="back" href="index.html">&larr; Back</a>
+
+  <div class="coming">Coming</div>
+
+</body>
+</html>
