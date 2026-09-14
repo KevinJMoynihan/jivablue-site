@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   ============================================================
-  jivablue.com.au  —  holding page
+  jivablue.com.au  —  Adventures of Crabby
   ============================================================
 
   This folder is the whole website. Two files, nothing else:
@@ -22,12 +22,12 @@
   To preview a change: save, then double-click index.html. It
   opens in your browser. Edit, save, refresh.
 
-  TO SWAP THE PICTURE
-  -------------------
-  Drop a new image into this folder and change the filename in
-  two places: the IMG_RATIO line in the script at the bottom,
-  and the src on the img tag. Keep a portrait-shaped image with
-  clear space at the top, or the wording will land on the art.
+  ABOUT THE CURVED TITLE
+  ----------------------
+  The lettering follows an invisible arc drawn as an SVG path.
+  The wording is in the BODY section, and the shape of the
+  curve is the "d=" line just above it. There are notes down
+  there explaining how to make the arc flatter or deeper.
   ============================================================
 -->
 <html lang="en-AU">
@@ -36,21 +36,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- EDIT: the text shown on the browser tab -->
-<title>Jiva Blue</title>
+<title>Adventures of Crabby</title>
 
 <!-- EDIT: the one-line description search engines show -->
-<meta name="description" content="Jiva Blue — under construction.">
+<meta name="description" content="Adventures of Crabby — a children's picture book.">
 
-<meta property="og:title" content="Jiva Blue">
-<meta property="og:description" content="Under construction">
+<meta property="og:title" content="Adventures of Crabby">
+<meta property="og:description" content="A children's picture book">
 <meta property="og:type" content="website">
 
-<!-- The lettering font. If this fails to load (no internet, say),
-     the browser falls back to the system fonts listed in the CSS
-     and the page still looks fine. -->
+<!-- The lettering font: Fredoka, a rounded geometric typeface that
+     suits the circular arc. If it fails to load the page falls back
+     to the system fonts listed in the CSS and still works. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
   /* ==========================================================
@@ -58,9 +58,8 @@
      picture blend into one another. Change these to restyle.
      ========================================================== */
   :root {
-    --paper:   #fbf4dd;   /* page background — matches the artwork's edge */
-    --ink:     #163a5c;   /* the lettering — deep navy, as on the book    */
-    --ink-soft:#3d6685;   /* quieter text                                 */
+    --paper: #fbf4dd;   /* page background — matches the artwork's edge */
+    --ink:   #163a5c;   /* the lettering — deep navy                    */
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,24 +68,20 @@
 
   body {
     background: var(--paper);
-    font-family: "Baloo 2", "Segoe UI", -apple-system, BlinkMacSystemFont,
-                 Roboto, "Helvetica Neue", Arial, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 16px;
-    /* Stops a stray horizontal scrollbar on narrow phones */
-    overflow-x: hidden;
+    overflow-x: hidden;   /* stops a stray sideways scrollbar on phones */
   }
 
-  /* The picture and the words are locked together inside this box, so
-     the lettering sits in the same spot on the artwork at every screen
+  /* The picture and the lettering are locked together inside this box,
+     so the title sits in the same spot on the artwork at every screen
      size. Its shape is set by the script at the bottom of the page. */
   .plate {
     position: relative;
     max-width: 100%;
     max-height: calc(100vh - 32px);
-    /* Fades and lifts gently into view on load */
     animation: rise 1s cubic-bezier(.22,.61,.36,1) both;
   }
 
@@ -100,41 +95,55 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    /* A soft shadow so the picture sits on the page rather than
-       floating flat against it. Delete for no shadow. */
     border-radius: 4px;
+    /* A soft shadow so the picture sits on the page rather than
+       floating flat against it. Delete this line for no shadow. */
     box-shadow: 0 10px 34px rgba(90, 66, 30, .17);
   }
 
-  /* The wording, positioned as a PERCENTAGE of the picture's height so
-     it stays in the blank sky area whatever size the screen is.
-     Nudge 'top' up or down if you change the illustration. */
-  .caption {
+  /* The curved title sits in a transparent layer directly on top of the
+     picture. Because the SVG's viewBox matches the illustration's real
+     dimensions (1200 x 1498), every coordinate in the arc below lines up
+     exactly with the artwork, at any size. */
+  .title {
     position: absolute;
-    top: 17%;
-    left: 8%;
-    right: 8%;
-    text-align: center;
-    pointer-events: none;
+    inset: 0;              /* covers the whole picture */
+    margin: 0;
+    pointer-events: none;  /* clicks pass through to the page beneath */
   }
 
-  /* EDIT: the size of the lettering. The middle number scales with the
-     picture; the first and last stop it getting silly at the extremes. */
-  .caption h1 {
-    font-size: clamp(21px, 6.4cqw, 58px);
+  .title svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* EDIT: the look of the lettering.
+     font-size is in the picture's own units, not screen pixels — it
+     scales automatically. Larger number = bigger letters. */
+  .arc-text {
+    font-family: "Fredoka", "Baloo 2", "Segoe UI", -apple-system,
+                 BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 96px;
     font-weight: 600;
-    color: var(--ink);
-    letter-spacing: .06em;
-    line-height: 1.22;
-    /* A faint light halo, so the words stay readable even if they
-       drift over a busier part of the picture */
-    text-shadow: 0 1px 0 rgba(255,255,255,.65),
-                 0 0 18px rgba(251,244,221,.85);
+    fill: var(--ink);       /* 'fill' is SVG's word for text colour */
+    letter-spacing: 1px;
   }
 
-  /* Lets the lettering scale against the PICTURE's width rather than the
-     whole browser window — that's what keeps it in proportion. */
-  .plate { container-type: inline-size; }
+  /* A soft pale halo behind the letters, so they stay readable wherever
+     they cross a busier part of the sky. Remove this rule for crisp,
+     flat lettering with no glow. */
+  .arc-halo {
+    font-family: "Fredoka", "Baloo 2", "Segoe UI", -apple-system,
+                 BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 96px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    fill: none;
+    stroke: #fdf8e8;
+    stroke-width: 14px;
+    stroke-linejoin: round;
+  }
 
   /* Respects the visitor's "reduce motion" accessibility setting */
   @media (prefers-reduced-motion: reduce) {
@@ -148,27 +157,61 @@
   <div class="plate" id="plate">
 
     <!-- EDIT: to use a different picture, change the filename here
-         (and the IMG_RATIO line in the script below). -->
+         AND the IMG_RATIO line in the script at the bottom. -->
     <img src="crab.webp" alt="A cheerful red crab on a sunny beach, with a wave curling behind and a sailing boat on the horizon">
 
-    <div class="caption">
-      <!-- EDIT: the wording. Keep it short — there's only so much sky. -->
-      <h1>Under Construction</h1>
-    </div>
+    <h1 class="title">
+      <svg viewBox="0 0 1200 1498" preserveAspectRatio="xMidYMid meet"
+           role="img" aria-label="Adventures of Crabby">
+        <defs>
+          <!--
+            THE ARC the letters follow. It is invisible — only the text
+            riding on it is drawn.
+
+              M 140 355    start here (left end)
+              A 1060 1060  the curve's radius — BIGGER number = FLATTER
+                           arc, smaller number = deeper, rounder arc.
+                           Try 700 for a much deeper curve, 1600 for
+                           nearly straight.
+              0 0 1        (leave these three alone)
+              1060 355     finish here (right end)
+
+            To move the whole title UP, make both 355s smaller — e.g.
+            315. To move it DOWN, make them larger. Keep the two the
+            same as each other or the title will sit crooked.
+          -->
+          <path id="titleArc" d="M 140 355 A 1060 1060 0 0 1 1060 355" fill="none"/>
+        </defs>
+
+        <!-- Drawn twice: once as a thick pale outline (the halo), then
+             the navy lettering on top. Both must carry the SAME wording. -->
+        <text class="arc-halo">
+          <textPath href="#titleArc" startOffset="50%" text-anchor="middle"
+                    textLength="910" lengthAdjust="spacing">Adventures of Crabby</textPath>
+        </text>
+
+        <!-- EDIT: the title wording. Change it in the line ABOVE too,
+             or the halo won't match the letters. -->
+        <text class="arc-text">
+          <textPath href="#titleArc" startOffset="50%" text-anchor="middle"
+                    textLength="910" lengthAdjust="spacing">Adventures of Crabby</textPath>
+        </text>
+      </svg>
+    </h1>
 
   </div>
 
 <script>
 (function () {
-  // The picture's shape, as height ÷ width. The current illustration is
-  // 1200 x 1498, so 1498/1200 = 1.248.
+  // The picture's shape, as height divided by width. The current
+  // illustration is 1200 x 1498, so 1498/1200 = 1.248.
   // EDIT this if you swap in a differently shaped image.
   var IMG_RATIO = 1498 / 1200;
 
   var plate = document.getElementById('plate');
 
   // Sizes the box to the largest that fits the window while keeping the
-  // picture's proportions — so the lettering never drifts off the sky,
+  // picture's proportions — so the title never drifts off the sky,
   // on a tall phone or a wide monitor alike.
   function fit() {
     var availW = window.innerWidth  - 32;
@@ -188,7 +231,7 @@
 
   fit();
   window.addEventListener('resize', fit);
-  // Re-fit once the font has loaded, in case it changes the layout
+  // Re-fit once the lettering font has loaded, in case it shifts things
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 })();
 </script>
