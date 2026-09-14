@@ -22,12 +22,22 @@
   To preview a change: save, then double-click index.html. It
   opens in your browser. Edit, save, refresh.
 
-  ABOUT THE CURVED TITLE
-  ----------------------
-  The lettering follows an invisible arc drawn as an SVG path.
-  The wording is in the BODY section, and the shape of the
-  curve is the "d=" line just above it. There are notes down
-  there explaining how to make the arc flatter or deeper.
+  ABOUT THE TITLE LETTERING
+  --------------------------
+  The title is three lines of script lettering — "Adventures",
+  "of", "Crabby" — stacked in the blank sky between the little
+  shell flourish near the top of the artwork and the small
+  diamond flourish lower down. It's plain SVG text, not a curve:
+  each line has its own x/y position and font-size in the BODY
+  section, in the SAME 1200 x 1498 units as the illustration, so
+  it lines up with the artwork at any screen size.
+
+  To nudge a line, change its "y" (smaller = higher up) or its
+  "x" (600 is dead-centre). To resize a line, change the
+  font-size for its class (.line-adventures / .line-of /
+  .line-crabby) down in the style section. Each line is drawn
+  twice — once as a pale halo, once as navy lettering — so keep
+  both copies of a line's wording identical.
   ============================================================
 -->
 <html lang="en-AU">
@@ -45,12 +55,13 @@
 <meta property="og:description" content="A children's picture book">
 <meta property="og:type" content="website">
 
-<!-- The lettering font: Fredoka, a rounded geometric typeface that
-     suits the circular arc. If it fails to load the page falls back
-     to the system fonts listed in the CSS and still works. -->
+<!-- The lettering font: Alex Brush, a flowing brush-script face that
+     matches the illustration's hand-painted, storybook feel. If it
+     fails to load the page falls back to the system fonts listed in
+     the CSS and still works. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
 
 <style>
   /* ==========================================================
@@ -101,10 +112,10 @@
     box-shadow: 0 10px 34px rgba(90, 66, 30, .17);
   }
 
-  /* The curved title sits in a transparent layer directly on top of the
+  /* The title sits in a transparent layer directly on top of the
      picture. Because the SVG's viewBox matches the illustration's real
-     dimensions (1200 x 1498), every coordinate in the arc below lines up
-     exactly with the artwork, at any size. */
+     dimensions (1200 x 1498), every coordinate below lines up exactly
+     with the artwork, at any size. */
   .title {
     position: absolute;
     inset: 0;              /* covers the whole picture */
@@ -118,53 +129,31 @@
     display: block;
   }
 
-  /* EDIT: the look of the lettering.
-     font-size is in the picture's own units, not screen pixels — it
-     scales automatically. Larger number = bigger letters. */
-  .arc-text {
-    font-family: "Fredoka", "Baloo 2", "Segoe UI", -apple-system,
-                 BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 96px;
-    font-weight: 600;
+  /* EDIT: the look of the lettering. Script fonts read best with NO
+     extra letter-spacing — it breaks the joined-up cursive strokes. */
+  .title-text {
+    font-family: "Alex Brush", "Segoe Script", "Brush Script MT", cursive;
+    font-weight: 400;
     fill: var(--ink);       /* 'fill' is SVG's word for text colour */
-    letter-spacing: 1px;
   }
 
   /* A soft pale halo behind the letters, so they stay readable wherever
      they cross a busier part of the sky. Remove this rule for crisp,
      flat lettering with no glow. */
-  .arc-halo {
-    font-family: "Fredoka", "Baloo 2", "Segoe UI", -apple-system,
-                 BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 96px;
-    font-weight: 600;
-    letter-spacing: 1px;
+  .title-halo {
+    font-family: "Alex Brush", "Segoe Script", "Brush Script MT", cursive;
+    font-weight: 400;
     fill: none;
     stroke: #fdf8e8;
-    stroke-width: 14px;
+    stroke-width: 10px;
     stroke-linejoin: round;
   }
 
-  /* EDIT: a text badge centred on the page, on top of everything else.
-     Fixed positioning means it stays dead-centre in the browser window
-     no matter how the picture below it is sized. */
-  .deployed-badge {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-family: "Fredoka", "Baloo 2", "Segoe UI", -apple-system,
-                 BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 28px;
-    font-weight: 600;
-    color: blue;
-    background: rgba(255, 255, 255, 0.85);
-    padding: 10px 24px;
-    border-radius: 10px;
-    box-shadow: 0 4px 14px rgba(90, 66, 30, .2);
-    z-index: 10;
-    text-align: center;
-  }
+  /* EDIT: font-size for each line, in the picture's own units — see
+     "ABOUT THE TITLE LETTERING" up top. */
+  .line-adventures { font-size: 160px; }
+  .line-of         { font-size: 75px;  }
+  .line-crabby     { font-size: 210px; }
 
   /* Respects the visitor's "reduce motion" accessibility setting */
   @media (prefers-reduced-motion: reduce) {
@@ -175,8 +164,6 @@
 
 <body>
 
-  <div class="deployed-badge">Testing Deployment Times</div>
-
   <div class="plate" id="plate">
 
     <!-- EDIT: to use a different picture, change the filename here
@@ -186,39 +173,19 @@
     <h1 class="title">
       <svg viewBox="0 0 1200 1498" preserveAspectRatio="xMidYMid meet"
            role="img" aria-label="Adventures of Crabby">
-        <defs>
-          <!--
-            THE ARC the letters follow. It is invisible — only the text
-            riding on it is drawn.
 
-              M 140 355    start here (left end)
-              A 800 800  the curve's radius — BIGGER number = FLATTER
-                           arc, smaller number = deeper, rounder arc.
-                           Try 700 for a much deeper curve, 1600 for
-                           nearly straight.
-              0 0 1        (leave these three alone)
-              1060 355     finish here (right end)
+        <!-- Drawn twice per line: once as a thick pale outline (the
+             halo), then the navy lettering on top. Keep the wording
+             identical between the two groups. -->
+        <text class="title-halo line-adventures" x="600" y="290" text-anchor="middle">Adventures</text>
+        <text class="title-halo line-of"         x="600" y="370" text-anchor="middle">of</text>
+        <text class="title-halo line-crabby"     x="600" y="540" text-anchor="middle">Crabby</text>
 
-            To move the whole title UP, make both 355s smaller — e.g.
-            315. To move it DOWN, make them larger. Keep the two the
-            same as each other or the title will sit crooked.
-          -->
-          <path id="titleArc" d="M 140 355 A 1060 1060 0 0 1 1060 355" fill="none"/>
-        </defs>
-
-        <!-- Drawn twice: once as a thick pale outline (the halo), then
-             the navy lettering on top. Both must carry the SAME wording. -->
-        <text class="arc-halo">
-          <textPath href="#titleArc" startOffset="50%" text-anchor="middle"
-                    textLength="910" lengthAdjust="spacing">Adventures of Crabby</textPath>
-        </text>
-
-        <!-- EDIT: the title wording. Change it in the line ABOVE too,
-             or the halo won't match the letters. -->
-        <text class="arc-text">
-          <textPath href="#titleArc" startOffset="50%" text-anchor="middle"
-                    textLength="910" lengthAdjust="spacing">Adventures of Crabby</textPath>
-        </text>
+        <!-- EDIT: the title wording. Change it in the halo group above
+             too, or the halo won't match the letters. -->
+        <text class="title-text line-adventures" x="600" y="290" text-anchor="middle">Adventures</text>
+        <text class="title-text line-of"         x="600" y="370" text-anchor="middle">of</text>
+        <text class="title-text line-crabby"     x="600" y="540" text-anchor="middle">Crabby</text>
       </svg>
     </h1>
 
