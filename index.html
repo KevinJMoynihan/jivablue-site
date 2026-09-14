@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  jivablue.com.au  —  holding page
+  ============================================================
+
+  This folder is the whole website. Two files, nothing else:
+
+      index.html   this file — the page itself
+      crab.webp    the illustration
+
+  HOW TO EDIT IT
+  --------------
+  Open this file in a plain text editor. VS Code is free and
+  ideal; Notepad works. Do NOT open or save it in Microsoft
+  Word — Word rewrites it into broken markup.
+
+  Everything you're likely to change is marked with a comment
+  beginning "EDIT:". The colours live together in the :root
+  block near the top of the style section.
+
+  To preview a change: save, then double-click index.html. It
+  opens in your browser. Edit, save, refresh.
+
+  TO SWAP THE PICTURE
+  -------------------
+  Drop a new image into this folder and change the filename in
+  two places: the IMG_RATIO line in the script at the bottom,
+  and the src on the img tag. Keep a portrait-shaped image with
+  clear space at the top, or the wording will land on the art.
+  ============================================================
+-->
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- EDIT: the text shown on the browser tab -->
+<title>Jiva Blue</title>
+
+<!-- EDIT: the one-line description search engines show -->
+<meta name="description" content="Jiva Blue — under construction.">
+
+<meta property="og:title" content="Jiva Blue">
+<meta property="og:description" content="Under construction">
+<meta property="og:type" content="website">
+
+<!-- The lettering font. If this fails to load (no internet, say),
+     the browser falls back to the system fonts listed in the CSS
+     and the page still looks fine. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ==========================================================
+     COLOURS — sampled from the illustration so the page and the
+     picture blend into one another. Change these to restyle.
+     ========================================================== */
+  :root {
+    --paper:   #fbf4dd;   /* page background — matches the artwork's edge */
+    --ink:     #163a5c;   /* the lettering — deep navy, as on the book    */
+    --ink-soft:#3d6685;   /* quieter text                                 */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--paper);
+    font-family: "Baloo 2", "Segoe UI", -apple-system, BlinkMacSystemFont,
+                 Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    /* Stops a stray horizontal scrollbar on narrow phones */
+    overflow-x: hidden;
+  }
+
+  /* The picture and the words are locked together inside this box, so
+     the lettering sits in the same spot on the artwork at every screen
+     size. Its shape is set by the script at the bottom of the page. */
+  .plate {
+    position: relative;
+    max-width: 100%;
+    max-height: calc(100vh - 32px);
+    /* Fades and lifts gently into view on load */
+    animation: rise 1s cubic-bezier(.22,.61,.36,1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+
+  .plate img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* A soft shadow so the picture sits on the page rather than
+       floating flat against it. Delete for no shadow. */
+    border-radius: 4px;
+    box-shadow: 0 10px 34px rgba(90, 66, 30, .17);
+  }
+
+  /* The wording, positioned as a PERCENTAGE of the picture's height so
+     it stays in the blank sky area whatever size the screen is.
+     Nudge 'top' up or down if you change the illustration. */
+  .caption {
+    position: absolute;
+    top: 17%;
+    left: 8%;
+    right: 8%;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  /* EDIT: the size of the lettering. The middle number scales with the
+     picture; the first and last stop it getting silly at the extremes. */
+  .caption h1 {
+    font-size: clamp(21px, 6.4cqw, 58px);
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: .06em;
+    line-height: 1.22;
+    /* A faint light halo, so the words stay readable even if they
+       drift over a busier part of the picture */
+    text-shadow: 0 1px 0 rgba(255,255,255,.65),
+                 0 0 18px rgba(251,244,221,.85);
+  }
+
+  /* Lets the lettering scale against the PICTURE's width rather than the
+     whole browser window — that's what keeps it in proportion. */
+  .plate { container-type: inline-size; }
+
+  /* Respects the visitor's "reduce motion" accessibility setting */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; }
+  }
+</style>
+</head>
+
+<body>
+
+  <div class="plate" id="plate">
+
+    <!-- EDIT: to use a different picture, change the filename here
+         (and the IMG_RATIO line in the script below). -->
+    <img src="crab.webp" alt="A cheerful red crab on a sunny beach, with a wave curling behind and a sailing boat on the horizon">
+
+    <div class="caption">
+      <!-- EDIT: the wording. Keep it short — there's only so much sky. -->
+      <h1>Under Construction</h1>
+    </div>
+
+  </div>
+
+<script>
+(function () {
+  // The picture's shape, as height ÷ width. The current illustration is
+  // 1200 x 1498, so 1498/1200 = 1.248.
+  // EDIT this if you swap in a differently shaped image.
+  var IMG_RATIO = 1498 / 1200;
+
+  var plate = document.getElementById('plate');
+
+  // Sizes the box to the largest that fits the window while keeping the
+  // picture's proportions — so the lettering never drifts off the sky,
+  // on a tall phone or a wide monitor alike.
+  function fit() {
+    var availW = window.innerWidth  - 32;
+    var availH = window.innerHeight - 32;
+
+    var w = availW;
+    var h = w * IMG_RATIO;
+
+    if (h > availH) {          // too tall for the window — fit by height
+      h = availH;
+      w = h / IMG_RATIO;
+    }
+
+    plate.style.width  = w + 'px';
+    plate.style.height = h + 'px';
+  }
+
+  fit();
+  window.addEventListener('resize', fit);
+  // Re-fit once the font has loaded, in case it changes the layout
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+
+</body>
+</html>
