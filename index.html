@@ -145,6 +145,27 @@
     stroke-linejoin: round;
   }
 
+  /* EDIT: a text badge centred on the page, on top of everything else.
+     Fixed positioning means it stays dead-centre in the browser window
+     no matter how the picture below it is sized. */
+  .deployed-badge {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Fredoka", "Baloo 2", "Segoe UI", -apple-system,
+                 BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.85);
+    padding: 10px 24px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(90, 66, 30, .2);
+    z-index: 10;
+    text-align: center;
+  }
+
   /* Respects the visitor's "reduce motion" accessibility setting */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; }
@@ -153,6 +174,8 @@
 </head>
 
 <body>
+
+  <div class="deployed-badge">Deployed Automatically</div>
 
   <div class="plate" id="plate">
 
@@ -238,5 +261,3 @@
 
 </body>
 </html>
-
-<!-- deploy pipeline verified 2026-09-14 -->
