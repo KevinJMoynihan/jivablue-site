@@ -327,6 +327,33 @@
 
   </div>
 
+  <!-- ============================================================
+       Netlify Identity: confirmation/invite/password-reset links
+       always send people back to this home page, no matter which
+       page they clicked "Log In / Sign Up" from -- so this script
+       (the same one feedback/feedback.html uses) has to be here too,
+       just to catch and finish processing those links. It has no
+       visible UI of its own on this page: if someone lands here
+       with a fresh confirmation/invite link, it logs them in
+       automatically and sends them straight to the feedback page;
+       otherwise it does nothing and this page behaves exactly as
+       before.
+       ============================================================ -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script>
+  (function () {
+    var completingAuthLink = /(confirmation_token|invite_token|recovery_token)=/.test(window.location.hash);
+
+    netlifyIdentity.on('login', function () {
+      if (completingAuthLink) {
+        netlifyIdentity.close();
+        window.location.href = 'feedback/feedback.html';
+      }
+    });
+
+    netlifyIdentity.init();
+  })();
+  </script>
 
 </body>
 </html>
