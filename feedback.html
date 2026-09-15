@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  jivablue.com.au  —  Feedback
+  ============================================================
+
+  This page lets visitors create a free account (via Netlify
+  Identity) and, once logged in, leave a comment (stored via
+  Netlify Forms). Nothing here needs a database you manage
+  yourself — both pieces are built into Netlify.
+
+  BEFORE THIS WORKS, TWO THINGS MUST BE TURNED ON IN NETLIFY
+  ------------------------------------------------------------
+  1. Site configuration -> Identity -> "Enable Identity".
+     Under Registration, choose "Open" (anyone can sign up) or
+     "Invite only" (you invite people by email) — your call.
+  2. Forms are detected automatically the moment this file (with
+     its <form data-netlify="true"> below) is deployed — nothing
+     to switch on for that part. Submitted feedback then appears
+     under Site configuration -> Forms in your Netlify dashboard.
+
+  HOW TO EDIT IT
+  --------------
+  Open this file in a plain text editor — VS Code, Notepad, not
+  Word. Wording is in the BODY section; colours and layout are in
+  the <style> block, matching the rest of the site (same --paper
+  and --ink colours as index.html and aboutcrabby.html).
+
+  HOW THE LOGIN GATE WORKS
+  --------------------------
+  The Netlify Identity widget (loaded via the <script> tag near
+  the bottom) manages accounts entirely — no server code here.
+  On page load, and whenever someone logs in or out, the script
+  checks netlifyIdentity.currentUser(): if there IS a logged-in
+  user, the feedback form is shown and a hidden field is filled
+  in with their email so you know who wrote each comment; if NOT,
+  a "Log In / Sign Up" button is shown instead. The form itself
+  stays in the page's HTML at all times (just hidden with CSS)
+  so Netlify's form-detection can always find it.
+  ============================================================
+-->
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- EDIT: the text shown on the browser tab -->
+<title>Feedback — Adventures of Crabby</title>
+
+<meta name="description" content="Leave feedback on Adventures of Crabby.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #fbf4dd;   /* same page background as the rest of the site */
+    --ink:   #163a5c;   /* same navy as the home page's title */
+    --text:  #2b2b2b;   /* body text — softer than pure black */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    padding: 60px 20px 80px;
+  }
+
+  .page {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .back {
+    display: inline-block;
+    margin-bottom: 28px;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    text-decoration: none;
+    opacity: .75;
+  }
+
+  .back:hover { opacity: 1; }
+
+  /* EDIT: the heading wording */
+  h1 {
+    font-family: "Alex Brush", "Segoe Script", "Brush Script MT", cursive;
+    font-weight: 400;
+    font-size: 56px;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.1;
+  }
+
+  .intro {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 30px;
+  }
+
+  /* The "logged out" card: just a short message and a button that
+     opens the Netlify Identity login/signup popup. */
+  .auth-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 26px 24px;
+    box-shadow: 0 6px 18px rgba(90, 66, 30, .12);
+  }
+
+  .auth-card p {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  /* EDIT: button colour/shape used for both "Log In / Sign Up" and
+     "Send Feedback". */
+  .btn {
+    display: inline-block;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--ink);
+    border: none;
+    padding: 11px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity .15s ease;
+  }
+
+  .btn:hover { opacity: .88; }
+
+  /* The "logged in" area: who's logged in, a log-out link, and the
+     feedback form itself. */
+  .account-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 22px;
+  }
+
+  .account-bar a {
+    color: var(--ink);
+    opacity: .75;
+    text-decoration: none;
+  }
+
+  .account-bar a:hover { opacity: 1; }
+
+  .feedback-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 26px 24px;
+    box-shadow: 0 6px 18px rgba(90, 66, 30, .12);
+  }
+
+  textarea {
+    display: block;
+    width: 100%;
+    min-height: 130px;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    border: 1px solid #ddd2b8;
+    border-radius: 10px;
+    padding: 14px;
+    resize: vertical;
+    margin-bottom: 16px;
+  }
+
+  textarea:focus {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+  }
+
+  /* A field real visitors never see or fill in — bots that auto-fill
+     every field on a page do, which is how Netlify's spam filter
+     (netlify-honeypot) catches them. Leave this alone. */
+  .hp-field { position: absolute; left: -9999px; }
+
+  .thanks {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Sections toggle with this attribute instead of being added or
+     removed, so the page's HTML — including the form Netlify's
+     form-detector reads — never changes shape. */
+  [hidden] { display: none !important; }
+</style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <a class="back" href="../index.html">&larr; Back</a>
+
+    <!-- EDIT: the heading and intro wording -->
+    <h1>Share Your Feedback</h1>
+    <p class="intro">
+      Have a comment about the Adventures of Crabby? Log in (or
+      create a free account) below, then let us know what you
+      think.
+    </p>
+
+    <!-- Shown when no one is logged in -->
+    <div id="logged-out" class="auth-card">
+      <p>You'll need to log in or create a free account to leave feedback.</p>
+      <button type="button" class="btn" id="login-btn">Log In / Sign Up</button>
+    </div>
+
+    <!-- Shown once someone is logged in -->
+    <div id="logged-in" hidden>
+
+      <div class="account-bar">
+        <span>Logged in as <strong id="user-email"></strong></span>
+        <a href="#" id="logout-btn">Log out</a>
+      </div>
+
+      <div class="feedback-card">
+        <!-- Netlify Forms: data-netlify="true" is what makes Netlify
+             detect and capture this form at deploy time. The hidden
+             "form-name" input is required for that detection to work.
+             netlify-honeypot names the spam-trap field above. -->
+        <form name="feedback" method="POST" data-netlify="true"
+              netlify-honeypot="bot-field" id="feedback-form">
+          <input type="hidden" name="form-name" value="feedback">
+          <p class="hp-field">
+            <label>Don't fill this in: <input name="bot-field"></label>
+          </p>
+
+          <!-- Filled in automatically by the script below with the
+               logged-in user's email, so you can see who wrote what
+               in the Netlify Forms dashboard. -->
+          <input type="hidden" name="email" id="email-field">
+
+          <!-- EDIT: the placeholder wording -->
+          <textarea name="comment" required
+                    placeholder="What did you think of Crabby's adventures?"></textarea>
+
+          <button type="submit" class="btn">Send Feedback</button>
+        </form>
+
+        <p class="thanks" id="thanks-message" hidden>
+          Thanks for your feedback!
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+(function () {
+  var loggedOutEl   = document.getElementById('logged-out');
+  var loggedInEl    = document.getElementById('logged-in');
+  var userEmailEl   = document.getElementById('user-email');
+  var emailFieldEl  = document.getElementById('email-field');
+  var loginBtn      = document.getElementById('login-btn');
+  var logoutBtn     = document.getElementById('logout-btn');
+  var form          = document.getElementById('feedback-form');
+  var thanksMessage = document.getElementById('thanks-message');
+
+  function showLoggedIn(user) {
+    loggedOutEl.hidden = true;
+    loggedInEl.hidden = false;
+    userEmailEl.textContent = user.email;
+    emailFieldEl.value = user.email;
+  }
+
+  function showLoggedOut() {
+    loggedInEl.hidden = true;
+    loggedOutEl.hidden = false;
+  }
+
+  loginBtn.addEventListener('click', function () {
+    netlifyIdentity.open();
+  });
+
+  logoutBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    netlifyIdentity.logout();
+  });
+
+  netlifyIdentity.on('init', function (user) {
+    if (user) { showLoggedIn(user); } else { showLoggedOut(); }
+  });
+
+  netlifyIdentity.on('login', function (user) {
+    showLoggedIn(user);
+    netlifyIdentity.close();
+  });
+
+  netlifyIdentity.on('logout', function () {
+    showLoggedOut();
+  });
+
+  netlifyIdentity.init();
+
+  // Submits the form in the background (so the page doesn't jump to
+  // Netlify's plain default "success" page) and shows a thank-you
+  // message in place instead.
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = new FormData(form);
+    fetch('/feedback/feedback.html', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(data).toString()
+    }).then(function () {
+      form.hidden = true;
+      thanksMessage.hidden = false;
+    }).catch(function () {
+      alert('Something went wrong sending your feedback — please try again.');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
