@@ -11,13 +11,14 @@
 
   BEFORE THIS WORKS, TWO THINGS MUST BE TURNED ON IN NETLIFY
   ------------------------------------------------------------
-  1. Site configuration -> Identity -> "Enable Identity".
-     Under Registration, choose "Open" (anyone can sign up) or
-     "Invite only" (you invite people by email) — your call.
+  1. Open the project in Netlify, then go to its "Identity" section
+     (in the left-hand menu) -> "Enable Identity". Under
+     Registration, choose "Open" (anyone can sign up) or "Invite
+     only" (you invite people by email) — your call.
   2. Forms are detected automatically the moment this file (with
      its <form data-netlify="true"> below) is deployed — nothing
      to switch on for that part. Submitted feedback then appears
-     under Site configuration -> Forms in your Netlify dashboard.
+     under the project's "Forms" section in Netlify.
 
   HOW TO EDIT IT
   --------------
@@ -37,6 +38,18 @@
   a "Log In / Sign Up" button is shown instead. The form itself
   stays in the page's HTML at all times (just hidden with CSS)
   so Netlify's form-detection can always find it.
+
+  CRABBY NAME + AVATAR (OPTIONAL PROFILE)
+  ------------------------------------------
+  The first time someone logs in, a small card invites them to
+  pick a nickname ("Crabby name") and one of eight emoji avatars.
+  Saving it calls netlifyIdentity.currentUser().update({data:{...}}),
+  which stores those two values on their Identity account
+  (user_metadata) — no extra file storage needed. Once set, it's
+  shown instead of their email and is sent along with every
+  feedback submission (as hidden "crabby_name"/"avatar" fields) so
+  it shows up in the Netlify Forms dashboard too. It's optional —
+  skipping it just leaves feedback tagged with their email instead.
   ============================================================
 -->
 <html lang="en-AU">
@@ -375,20 +388,63 @@
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
 (function () {
-  var loggedOutEl   = document.getElementById('logged-out');
-  var loggedInEl    = document.getElementById('logged-in');
-  var userEmailEl   = document.getElementById('user-email');
-  var emailFieldEl  = document.getElementById('email-field');
-  var loginBtn      = document.getElementById('login-btn');
-  var logoutBtn     = document.getElementById('logout-btn');
-  var form          = document.getElementById('feedback-form');
-  var thanksMessage = document.getElementById('thanks-message');
+  var loggedOutEl    = document.getElementById('logged-out');
+  var loggedInEl     = document.getElementById('logged-in');
+  var accountLabelEl = document.getElementById('account-label');
+  var emailFieldEl   = document.getElementById('email-field');
+  var loginBtn       = document.getElementById('login-btn');
+  var logoutBtn      = document.getElementById('logout-btn');
+  var editProfileBtn = document.getElementById('edit-profile-btn');
+  var form           = document.getElementById('feedback-form');
+  var thanksMessage  = document.getElementById('thanks-message');
+
+  var profileCard    = document.getElementById('profile-card');
+  var nameInput       = document.getElementById('crabby-name-input');
+  var avatarPicker    = document.getElementById('avatar-picker');
+  var avatarButtons   = avatarPicker.querySelectorAll('.avatar-choice');
+  var saveProfileBtn  = document.getElementById('save-profile-btn');
+  var profileStatus   = document.getElementById('profile-status');
+  var crabbyNameField = document.getElementById('crabby-name-field');
+  var avatarField     = document.getElementById('avatar-field');
+  var selectedAvatar  = null;
+
+  function selectAvatar(avatar) {
+    selectedAvatar = avatar;
+    avatarButtons.forEach(function (btn) {
+      btn.classList.toggle('selected', btn.getAttribute('data-avatar') === avatar);
+    });
+  }
+
+  avatarButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      selectAvatar(btn.getAttribute('data-avatar'));
+    });
+  });
 
   function showLoggedIn(user) {
     loggedOutEl.hidden = true;
     loggedInEl.hidden = false;
-    userEmailEl.textContent = user.email;
     emailFieldEl.value = user.email;
+
+    var meta = user.user_metadata || {};
+    if (meta.crabby_name) {
+      accountLabelEl.textContent = (meta.avatar ? meta.avatar + ' ' : '') + meta.crabby_name;
+      nameInput.value = meta.crabby_name;
+      selectAvatar(meta.avatar || '🦀');
+      crabbyNameField.value = meta.crabby_name;
+      avatarField.value = meta.avatar || '';
+      profileCard.hidden = true;
+    } else {
+      // First time we've seen this person: invite them to set a Crabby
+      // name straight away, but they can still leave feedback under
+      // their email without one.
+      accountLabelEl.textContent = user.email;
+      nameInput.value = '';
+      selectAvatar('🦀');
+      crabbyNameField.value = '';
+      avatarField.value = '';
+      profileCard.hidden = false;
+    }
   }
 
   function showLoggedOut() {
@@ -403,6 +459,37 @@
   logoutBtn.addEventListener('click', function (e) {
     e.preventDefault();
     netlifyIdentity.logout();
+  });
+
+  editProfileBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    profileCard.hidden = !profileCard.hidden;
+  });
+
+  saveProfileBtn.addEventListener('click', function () {
+    var name = nameInput.value.trim();
+    if (!name) {
+      profileStatus.textContent = 'Please enter a Crabby name first.';
+      profileStatus.hidden = false;
+      return;
+    }
+
+    saveProfileBtn.disabled = true;
+    saveProfileBtn.textContent = 'Saving…';
+    profileStatus.hidden = true;
+
+    netlifyIdentity.currentUser().update({
+      data: { crabby_name: name, avatar: selectedAvatar }
+    }).then(function (user) {
+      showLoggedIn(user);
+      saveProfileBtn.disabled = false;
+      saveProfileBtn.textContent = 'Save profile';
+    }).catch(function () {
+      profileStatus.textContent = 'Could not save your profile — please try again.';
+      profileStatus.hidden = false;
+      saveProfileBtn.disabled = false;
+      saveProfileBtn.textContent = 'Save profile';
+    });
   });
 
   netlifyIdentity.on('init', function (user) {
