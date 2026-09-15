@@ -101,22 +101,18 @@
 
   body {
     background: var(--paper);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    padding: 16px;
-    overflow-x: hidden;   /* stops a stray sideways scrollbar on phones */
+    overflow: hidden;   /* the picture fills the viewport exactly, so no scrollbars */
   }
 
-  /* The picture and the lettering are locked together inside this box,
-     so the title sits in the same spot on the artwork at every screen
-     size. Its shape is set by the script at the bottom of the page. */
+  /* The picture and the lettering are locked together, filling the
+     whole browser window edge-to-edge. The picture crops (via
+     object-fit: cover below) rather than shrinking to fit, so it
+     always fills the screen with no cream border around it. */
   .plate {
-    position: relative;
-    max-width: 100%;
-    max-height: calc(100vh - 160px);
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
     animation: rise 1s cubic-bezier(.22,.61,.36,1) both;
   }
 
@@ -129,11 +125,9 @@
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    border-radius: 4px;
-    /* A soft shadow so the picture sits on the page rather than
-       floating flat against it. Delete this line for no shadow. */
-    box-shadow: 0 10px 34px rgba(90, 66, 30, .17);
+    object-fit: cover;         /* fills the screen, cropping edges as needed */
+    object-position: center 25%;  /* keeps the sky/title area on screen on
+                                      wide windows, cropping the sand instead */
   }
 
   /* The title sits in a transparent layer directly on top of the
@@ -255,7 +249,7 @@
     <img src="images/mainpagebackground.webp" alt="A cheerful red crab on a sunny beach, with a wave curling behind and a sailing boat on the horizon">
 
     <h1 class="title">
-      <svg viewBox="0 0 1200 1498" preserveAspectRatio="xMidYMid meet"
+      <svg viewBox="0 0 1200 1498" preserveAspectRatio="xMidYMin slice"
            role="img" aria-label="Adventures of Crabby">
         <defs>
           <!-- The gentle arc "Adventures" rides on. Bigger A-radius = flatter. -->
@@ -299,40 +293,6 @@
 
   </div>
 
-<script>
-(function () {
-  // The picture's shape, as height divided by width. The current
-  // illustration is 1200 x 1498, so 1498/1200 = 1.248.
-  // EDIT this if you swap in a differently shaped image.
-  var IMG_RATIO = 1498 / 1200;
-
-  var plate = document.getElementById('plate');
-
-  // Sizes the box to the largest that fits the window while keeping the
-  // picture's proportions — so the title never drifts off the sky,
-  // on a tall phone or a wide monitor alike.
-  function fit() {
-    var availW = window.innerWidth  - 32;
-    var availH = window.innerHeight - 32;
-
-    var w = availW;
-    var h = w * IMG_RATIO;
-
-    if (h > availH) {          // too tall for the window — fit by height
-      h = availH;
-      w = h / IMG_RATIO;
-    }
-
-    plate.style.width  = w + 'px';
-    plate.style.height = h + 'px';
-  }
-
-  fit();
-  window.addEventListener('resize', fit);
-  // Re-fit once the lettering font has loaded, in case it shifts things
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
-})();
-</script>
 
 </body>
 </html>
