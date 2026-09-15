@@ -194,38 +194,49 @@
     filter: drop-shadow(0 8px 14px rgba(90, 66, 30, .28));
   }
 
-  /* EDIT: the "About Crabby" link, embedded directly over the picture
-     (bottom-centre) rather than as a card below it — see
-     'ABOUT THE "ABOUT CRABBY" LINK' up top. Nudge bottom/font-size to
-     reposition or resize; --ink (the same navy used for the title) is
-     the blue. */
+  /* EDIT: the "About Crabby" link — the small Crabby Image.png picture,
+     embedded on the main picture (bottom-centre), with the "About
+     Crabby" words sitting directly on top of it as a caption strip —
+     see 'ABOUT THE "ABOUT CRABBY" LINK' up top. width resizes the
+     whole thing; --ink (the same navy as the title) is the blue. */
   .about-link {
     position: absolute;
     bottom: 3%;
     left: 50%;
     transform: translateX(-50%);
-    display: inline-block;
+    display: block;
+    width: 92px;
     text-decoration: none;
-    background: rgba(255, 255, 255, .82);
-    padding: 5px 14px;
-    border-radius: 999px;
-    box-shadow: 0 4px 12px rgba(90, 66, 30, .2);
-    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(90, 66, 30, .25);
+    transition: transform .15s ease, box-shadow .15s ease;
   }
 
   .about-link:hover {
     transform: translateX(-50%) translateY(-2px);
-    background: #fff;
-    box-shadow: 0 6px 16px rgba(90, 66, 30, .28);
+    box-shadow: 0 6px 16px rgba(90, 66, 30, .32);
+  }
+
+  .about-link img {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
   .about-link span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, .85);
     font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
                  "Helvetica Neue", Arial, sans-serif;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--ink);
-    white-space: nowrap;
+    text-align: center;
+    padding: 3px 2px;
   }
 
   /* Respects the visitor's "reduce motion" accessibility setting */
@@ -282,7 +293,8 @@
          point it elsewhere; change the words in <span> for different
          link text. -->
     <a class="about-link" href="aboutcrabby/aboutcrabby.html">
-      <span>About Crabby &rarr;</span>
+      <img src="images/Crabby%20Image.png" alt="Crabby peeking out of his sandcastle hideaway">
+      <span>About Crabby</span>
     </a>
 
   </div>
