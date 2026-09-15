@@ -164,6 +164,72 @@
 
   .account-bar a:hover { opacity: 1; }
 
+  .account-links a + a { margin-left: 10px; }
+
+  /* The optional "set your Crabby name + avatar" card. */
+  .field-label {
+    display: block;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  #crabby-name-input {
+    display: block;
+    width: 100%;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    border: 1px solid #ddd2b8;
+    border-radius: 10px;
+    padding: 11px 14px;
+    margin-bottom: 18px;
+  }
+
+  #crabby-name-input:focus {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+  }
+
+  .avatar-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .avatar-choice {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper);
+    border: 2px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .avatar-choice.selected {
+    border-color: var(--ink);
+    background: #fff;
+  }
+
+  .save-status {
+    margin-top: 12px;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
   .feedback-card {
     background: #fff;
     border-radius: 14px;
@@ -235,8 +301,37 @@
     <div id="logged-in" hidden>
 
       <div class="account-bar">
-        <span>Logged in as <strong id="user-email"></strong></span>
-        <a href="#" id="logout-btn">Log out</a>
+        <span>Logged in as <strong id="account-label"></strong></span>
+        <span class="account-links">
+          <a href="#" id="edit-profile-btn">Edit profile</a>
+          <a href="#" id="logout-btn">Log out</a>
+        </span>
+      </div>
+
+      <!-- Optional: a Crabby name + avatar shown with feedback instead of
+           a plain email address. Shown automatically the first time
+           someone logs in (until they save one), and any time they click
+           "Edit profile". -->
+      <div id="profile-card" class="auth-card" hidden>
+        <p>Pick a Crabby name and an avatar to show with your feedback (optional, but more fun than your email!).</p>
+
+        <label class="field-label" for="crabby-name-input">Crabby name</label>
+        <input type="text" id="crabby-name-input" maxlength="40" placeholder="e.g. Sandy Claws">
+
+        <p class="field-label">Avatar</p>
+        <div class="avatar-picker" id="avatar-picker">
+          <button type="button" class="avatar-choice" data-avatar="🦀" aria-label="Crab">🦀</button>
+          <button type="button" class="avatar-choice" data-avatar="🐚" aria-label="Shell">🐚</button>
+          <button type="button" class="avatar-choice" data-avatar="⛵" aria-label="Sailboat">⛵</button>
+          <button type="button" class="avatar-choice" data-avatar="🌊" aria-label="Wave">🌊</button>
+          <button type="button" class="avatar-choice" data-avatar="🏖️" aria-label="Beach">🏖️</button>
+          <button type="button" class="avatar-choice" data-avatar="⭐" aria-label="Star">⭐</button>
+          <button type="button" class="avatar-choice" data-avatar="🌴" aria-label="Palm tree">🌴</button>
+          <button type="button" class="avatar-choice" data-avatar="☀️" aria-label="Sun">☀️</button>
+        </div>
+
+        <button type="button" class="btn" id="save-profile-btn">Save profile</button>
+        <p class="save-status" id="profile-status" hidden></p>
       </div>
 
       <div class="feedback-card">
@@ -255,6 +350,11 @@
                logged-in user's email, so you can see who wrote what
                in the Netlify Forms dashboard. -->
           <input type="hidden" name="email" id="email-field">
+
+          <!-- Filled in from the Crabby name/avatar saved on the profile
+               card above, if the person has set one. -->
+          <input type="hidden" name="crabby_name" id="crabby-name-field">
+          <input type="hidden" name="avatar" id="avatar-field">
 
           <!-- EDIT: the placeholder wording -->
           <textarea name="comment" required
