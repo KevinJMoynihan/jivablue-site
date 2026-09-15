@@ -188,16 +188,22 @@
     filter: drop-shadow(0 8px 14px rgba(90, 66, 30, .28));
   }
 
-  /* EDIT: the "About Crabby" link — the small Crabby Image.png picture,
-     embedded on the main picture (bottom-centre), with the "About
-     Crabby" words sitting directly on top of it as a caption strip —
-     see 'ABOUT THE "ABOUT CRABBY" LINK' up top. width resizes the
-     whole thing; --ink (the same navy as the title) is the blue. */
-  .about-link {
+  /* EDIT: the two links sitting on the picture itself (bottom-centre) —
+     "About Crabby" (a small picture with its caption on top of it) and
+     "Feedback" (a plain text pill) side by side — see 'ABOUT THE
+     "ABOUT CRABBY" LINK' up top. --ink (the same navy as the title) is
+     the blue used for both. */
+  .link-row {
     position: absolute;
     bottom: 3%;
     left: 50%;
     transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .about-link {
     display: block;
     width: 92px;
     text-decoration: none;
@@ -208,7 +214,7 @@
   }
 
   .about-link:hover {
-    transform: translateX(-50%) translateY(-2px);
+    transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(90, 66, 30, .32);
   }
 
@@ -231,6 +237,31 @@
     color: var(--ink);
     text-align: center;
     padding: 3px 2px;
+  }
+
+  /* EDIT: the "Feedback" link — a small text pill, same treatment as
+     the About Crabby caption. width/height nudge to taste. */
+  .feedback-link {
+    display: inline-block;
+    text-decoration: none;
+    background: rgba(255, 255, 255, .85);
+    padding: 5px 12px;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(90, 66, 30, .25);
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    align-self: flex-end;
+    margin-bottom: 3px;   /* lines its text up with the About Crabby caption */
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .feedback-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(90, 66, 30, .32);
   }
 
   /* Respects the visitor's "reduce motion" accessibility setting */
@@ -286,10 +317,13 @@
          see 'ABOUT THE "ABOUT CRABBY" LINK' up top. Change href to
          point it elsewhere; change the words in <span> for different
          link text. -->
-    <a class="about-link" href="aboutcrabby/aboutcrabby.html">
-      <img src="images/Crabby%20Image.png" alt="Crabby peeking out of his sandcastle hideaway">
-      <span>About Crabby</span>
-    </a>
+    <div class="link-row">
+      <a class="about-link" href="aboutcrabby/aboutcrabby.html">
+        <img src="images/Crabby%20Image.png" alt="Crabby peeking out of his sandcastle hideaway">
+        <span>About Crabby</span>
+      </a>
+      <a class="feedback-link" href="feedback/feedback.html">Feedback</a>
+    </div>
 
   </div>
 
